@@ -2,7 +2,7 @@ import DarkMode from './DarkMode';
 import WelcomeScreen from './WelcomeScreen';
 import Question from './Question';
 import Results from './Results';
-import { useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import data from '../data/data.json';
 
 const initialState = {
@@ -41,31 +41,42 @@ function reducer(state, action) {
   }
 }
 
-function App() {
-  const [{ title, quiz, index, answer, score }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
+function getInitialState() {
+  const savedState = localStorage.getItem('quiz');
+  return savedState ? JSON.parse(savedState) : initialState;
+}
 
-  const question = quiz?.questions.at(index);
-  const numQuestions = quiz?.questions.length;
+function App() {
+  const [state, dispatch] = useReducer(reducer, initialState, getInitialState);
+
+  const question = state.quiz?.questions.at(state.index);
+  const numQuestions = state.quiz?.questions.length;
+
+  useEffect(
+    function () {
+      localStorage.setItem('quiz', JSON.stringify(state));
+    },
+    [state]
+  );
 
   return (
     <div>
-      <DarkMode quiz={quiz} />
-      {!title && <WelcomeScreen dispatch={dispatch} />}
+      <DarkMode quiz={state.quiz} />
+      {!state.title && <WelcomeScreen dispatch={dispatch} />}
 
-      {index !== numQuestions && title && (
+      {state.index !== numQuestions && state.title && (
         <Question
           question={question}
-          index={index}
+          index={state.index}
           numQuestions={numQuestions}
           dispatch={dispatch}
-          answer={answer}
+          answer={state.answer}
         />
       )}
 
-      {index === numQuestions && <Results quiz={quiz} score={score} dispatch={dispatch}/>}
+      {state.index === numQuestions && (
+        <Results quiz={state.quiz} score={state.score} dispatch={dispatch} />
+      )}
     </div>
   );
 }

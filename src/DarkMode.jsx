@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react';
 
 function DarkMode({ quiz }) {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(function () {
+    const storedValue = localStorage.getItem('mode');
+    return storedValue ? JSON.parse(storedValue) : false;
+  });
+
 
   useEffect(
     function () {
       if (darkMode) document.body.classList.add('dark-mode');
       else document.body.classList.remove('dark-mode');
+      localStorage.setItem('mode', JSON.stringify(darkMode));
     },
     [darkMode]
   );
