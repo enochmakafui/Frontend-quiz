@@ -20,7 +20,7 @@ function Options({
             <span className='option-icon'>
               {index + 1 === 1 && 'A'}
               {index + 1 === 2 && 'B'}
-              {index + 1 === 3 && 'D'}
+              {index + 1 === 3 && 'C'}
               {index + 1 === 4 && 'D'}
             </span>
             <span className='option-text'>{option}</span>
